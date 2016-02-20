@@ -1,0 +1,65 @@
+---
+
+nginx::config::vhost_purge: true
+nginx::config::confd_purge: true
+
+nginx::nginx_vhosts:
+  "www.wimdu.com":
+    ensure: present
+    server_name: 'www.wimdu.it'
+    listen_port: '443'
+    rewrite_www_to_non_www: true
+    www_root: "/srv/data/www"
+    ssl_protocols: 'TLSv1 TLSv1.1 TLSv1.2'
+    access_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    error_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    try_files:
+      - '$uri/index.html'
+      - '$uri'
+      - '@unicorn'
+
+  "www.wimdu.de":
+    ensure: present
+    server_name: 'www.wimdu.it'
+    listen_port: '443'
+    rewrite_www_to_non_www: true
+    www_root: "/srv/data/www"
+    ssl_protocols: 'TLSv1 TLSv1.1 TLSv1.2'
+    access_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    error_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    try_files:
+      - '$uri/index.html'
+      - '$uri'
+      - '@unicorn'
+
+  "www.wimdu.it":
+    ensure: present
+    server_name: 'www.wimdu.it'
+    listen_port: '443'
+    rewrite_www_to_non_www: true
+    www_root: "/srv/data/www"
+    ssl_protocols: 'TLSv1 TLSv1.1 TLSv1.2'
+    access_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    error_log: 'syslog:server=0.0.0.0:514,facility=user,tag=nginx,severity=notice wimdu;'
+    try_files:
+      - '$uri/index.html'
+      - '$uri'
+      - '@unicorn'
+
+
+nginx::nginx_locations:
+  '@unicorn':
+    ensure: present
+    location: '@unicorn'
+    location_cfg_append:
+      uninitialized_variable_warn: off
+      add_header: 'Backend unicorn'
+      proxy_set_header: 'X-Forwarded-For $proxy_add_x_forwarded_for Host $host'
+      proxy_redirect: 'off'
+      proxy_pass: 'http://unicorn'
+    
+nginx::nginx_upstreams:
+  '@unicorn':
+    ensure: present
+    members:
+      - "unix:/tmp/.unicorn.%{hiera('server_name')}.sock fail_timeout=0"

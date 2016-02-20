@@ -1,0 +1,15 @@
+---
+:backends:
+  - yaml
+ 
+:hierarchy:
+  - "nodes/%{::fqdn}"
+  - "%{environment}/%{role}"
+  - "%{role}"
+  - "%{environment}"
+ 
+:yaml:
+  :datadir: /etc/puppet/hieradata/
+
+:logging:
+  - console
