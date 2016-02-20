@@ -8,7 +8,7 @@ We need a working Puppet setup
 ## Dependencies
 We will be using some 3rd party modules:
 
-* [jfryman-nginx](https://forge.puppetlabs.com/jfryman/nginx)
+- [jfryman-nginx]   (https://forge.puppetlabs.com/jfryman/nginx)
 
 ```
 $ sudo puppet module install jfryman-nginx --modulepath /etc/puppet/modules
